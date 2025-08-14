@@ -91,6 +91,96 @@ export const resumes: Resume[] = [
         },
       },
     },
+    {
+      id: "4",
+      companyName: "Apple",
+      jobTitle: "iOS Developer",
+      imagePath: "/images/resume_03.png",
+      resumePath: "/resumes/resume-3.pdf",
+      feedback: {
+        overallScore: 75,
+        ATS: {
+          score: 90,
+          tips: [],
+        },
+        toneAndStyle: {
+          score: 90,
+          tips: [],
+        },
+        content: {
+          score: 90,
+          tips: [],
+        },
+        structure: {
+          score: 90,
+          tips: [],
+        },
+        skills: {
+          score: 90,
+          tips: [],
+        },
+      },
+    },
+    {
+      id: "5",
+      companyName: "Apple",
+      jobTitle: "iOS Developer",
+      imagePath: "/images/resume_03.png",
+      resumePath: "/resumes/resume-3.pdf",
+      feedback: {
+        overallScore: 75,
+        ATS: {
+          score: 90,
+          tips: [],
+        },
+        toneAndStyle: {
+          score: 90,
+          tips: [],
+        },
+        content: {
+          score: 90,
+          tips: [],
+        },
+        structure: {
+          score: 90,
+          tips: [],
+        },
+        skills: {
+          score: 90,
+          tips: [],
+        },
+      },
+    },
+    {
+      id: "6",
+      companyName: "Apple",
+      jobTitle: "iOS Developer",
+      imagePath: "/images/resume_03.png",
+      resumePath: "/resumes/resume-3.pdf",
+      feedback: {
+        overallScore: 75,
+        ATS: {
+          score: 90,
+          tips: [],
+        },
+        toneAndStyle: {
+          score: 90,
+          tips: [],
+        },
+        content: {
+          score: 90,
+          tips: [],
+        },
+        structure: {
+          score: 90,
+          tips: [],
+        },
+        skills: {
+          score: 90,
+          tips: [],
+        },
+      },
+    },
   ];
   
   export const AIResponseFormat = `
