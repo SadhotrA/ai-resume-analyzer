@@ -56,3 +56,13 @@ interface Job {
       }[];
     };
   }
+
+declare module 'pdfjs-dist/build/pdf.mjs' {
+  export const GlobalWorkerOptions: any;
+  export function getDocument(options: any): any;
+}
+
+declare module 'pdfjs-dist/web/pdf.mjs' {
+  export const GlobalWorkerOptions: any;
+  export function getDocument(options: any): any;
+}

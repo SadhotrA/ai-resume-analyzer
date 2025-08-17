@@ -26,11 +26,16 @@ const Upload = () => {
     if (!uploadedFile) return setStatusText('Error: Failed to upload file');
 
     setStatusText('Converting to image...');
-    const imageFile = await convertPdfToImage(file);
-    if (!imageFile.file) return setStatusText('Error: Failed to convert PDF to image');
+    const imageResult = await convertPdfToImage(file);
+    if (!imageResult.file) {
+      const errorMessage = imageResult.error || 'Failed to convert PDF to image';
+      setStatusText(`Error: ${errorMessage}`);
+      setIsProcessing(false);
+      return;
+    }
 
     setStatusText('Uploading the image...');
-    const uploadedImage = await fs.upload([imageFile.file]);
+    const uploadedImage = await fs.upload([imageResult.file]);
     if (!uploadedImage) return setStatusText('Error: Failed to upload image');
 
     setStatusText('Preparing data...');
@@ -46,21 +51,39 @@ const Upload = () => {
 
     setStatusText('Analyzing...');
 
-    const feedback = await ai.feedback(
-      uploadedFile.path,
-      prepareInstructions({ jobTitle, jobDescription, AIResponseFormat })
-    )
-    if (!feedback) return setStatusText('Error: Failed to analyze resume');
+    try {
+      const feedback = await ai.feedback(
+        uploadedFile.path,
+        prepareInstructions({ jobTitle, jobDescription, AIResponseFormat })
+      );
+      
+      if (!feedback) {
+        setStatusText('Error: Failed to analyze resume - AI service unavailable');
+        setIsProcessing(false);
+        return;
+      }
 
-    const feedbackText = typeof feedback.message.content === 'string'
-      ? feedback.message.content
-      : feedback.message.content[0].text;
+      const feedbackText = typeof feedback.message.content === 'string'
+        ? feedback.message.content
+        : feedback.message.content[0].text;
 
-    data.feedback = JSON.parse(feedbackText);
-    await kv.set(`resume:${uuid}`, JSON.stringify(data));
-    setStatusText('Analysis complete, redirecting...');
-    console.log(data);
-    navigate(`/resume/${uuid}`);
+      try {
+        data.feedback = JSON.parse(feedbackText);
+        await kv.set(`resume:${uuid}`, JSON.stringify(data));
+        setStatusText('Analysis complete, redirecting...');
+        console.log(data);
+        navigate(`/resume/${uuid}`);
+      } catch (parseError) {
+        setStatusText('Error: Failed to parse AI response');
+        setIsProcessing(false);
+        return;
+      }
+    } catch (analysisError) {
+      console.error('Analysis error:', analysisError);
+      setStatusText('Error: Failed to analyze resume - please try again');
+      setIsProcessing(false);
+      return;
+    }
   }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -88,7 +111,23 @@ const Upload = () => {
           {isProcessing ? (
             <>
               <h2>{statusText}</h2>
-              <img src="/images/resume-scan.gif" className="w-full" />
+              {statusText.startsWith('Error:') ? (
+                <div className="flex flex-col gap-4 mt-4">
+                  <img src="/images/resume-scan-2.gif" className="w-full" />
+                  <button 
+                    onClick={() => {
+                      setIsProcessing(false);
+                      setStatusText('');
+                      setFile(null);
+                    }}
+                    className="secondary-button"
+                  >
+                    Try Again
+                  </button>
+                </div>
+              ) : (
+                <img src="/images/resume-scan.gif" className="w-full" />
+              )}
             </>
           ) : (
             <h2>Drop your resume for an ATS score and improvement tips</h2>
@@ -123,4 +162,5 @@ const Upload = () => {
     </main>
   )
 }
+
 export default Upload
